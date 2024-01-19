@@ -8,8 +8,12 @@ default_moment_version = '2.29.4'
 default_moment_sri = ('sha512-42PE0rd+wZ2hNXftlM78BSehIGzezNeQuzihiBCvUEB3CVx'
                       'HvsShF86wBWwQORNxNINlBPuq7rG4WWhNiTVHFg==')
 
+default_timezone_version = '0.5.44'
+default_timezone_sri = ('sha512-RXtJrGoSQyl0weQHXuwgkyDCaSBfxl7qJjlWIV/rxZudYv3'
+                      'jgqQUESvesun4wLVMauLtAiSz5AQAgKYtAFj+qQ==')
+
 js_code = '''function flask_moment_render(elem) {{
-    const timestamp = moment(elem.dataset.timestamp);
+    const timestamp = moment(elem.dataset.timestamp).tz(moment.tz.guess());
     const func = elem.dataset.function;
     const format = elem.dataset.format;
     const timestamp2 = elem.dataset.timestamp2;
@@ -106,8 +110,12 @@ class moment(object):
                            'libs/moment.js/{}/{}" integrity="{}" '
                            'crossorigin="anonymous"></script>\n').format(
                                version, js_filename, sri)
-        return Markup('{}\n<script>\n{}\n</script>\n'''.format(
-            mjs, cls.flask_moment_js()))
+        tzjs = ('<script src="https://cdnjs.cloudflare.com/ajax/'
+                'libs/moment-timezone/{}/moment-timezone-with-data.min.js" '
+                'integrity="{}" crossorigin="anonymous"></script>\n').format(
+                    default_timezone_version, default_timezone_sri)
+        return Markup('{}\n{}\n<script>\n{}\n</script>\n'''.format(
+            mjs, tzjs, cls.flask_moment_js()))
 
     @staticmethod
     def locale(language='en', auto_detect=False, customization=None):
